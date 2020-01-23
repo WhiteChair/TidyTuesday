@@ -1,2 +1,2 @@
 # TidyTuesday
-Sharing how to's for my TidyTuesday
+Sharing how to's from my TidyTuesday. 
