@@ -1,0 +1,55 @@
+---
+title: "Spotify"
+output: html_notebook
+---
+
+
+```{r libs}
+library(tidyverse)
+```
+
+```{r data import}
+data1 <- tidytuesdayR::tt_load(2020, week = 4)
+data <- data1$spotify_songs
+```
+
+```{r plot}
+
+p1 <- data %>% select(track_artist,track_name, track_album_name,track_album_release_date,track_popularity,energy, danceability, instrumentalness,liveness,speechiness,tempo,duration_ms) %>% filter(track_artist == "Kanye West") %>% group_by(track_album_name) %>% mutate(average_pop = mean(track_popularity), Type_of_Kanye =
+         ifelse(track_album_release_date > 2013-01-01, "New Kanye", "Old Kanye"))
+
+p1
+
+kanye1<- p1 %>%  ggplot(mapping = aes(x = average_pop, y = danceability, color = Type_of_Kanye, label =track_album_name))+
+  geom_jitter()+
+  labs(x = "Album popularity", y = "Danceability", title = "Kanye West Danceability vs Album Popularity", subtitle = "Albums after MBDF are new Kanye")+
+  theme_classic()
+
+
+kanye1 <- kanye1+ geom_text(check_overlap = TRUE, nudge_x = 0.52, nudge_y = 0.02)
+
+kanye1
+
+library(ggrepel) # This is cool
+kanye1+geom_label_repel(data = subset(p1, danceability > .55),                   box.padding   = 0.2, 
+                  point.padding = 0.1,
+                  segment.color = 'grey50')
+
+kanye2 <- p1 %>%  ggplot(mapping = aes(x =track_album_release_date , y =danceability , color = Type_of_Kanye, label =track_album_name))+
+  geom_jitter()+
+  labs(x = "Release Date", y = "Danceability", title = "Kanye West vs Time VS Danceability", subtitle = "Albums after MBDF are new Kanye")+
+  theme_classic()
+
+kanye2<- kanye2+ geom_text(check_overlap = TRUE, nudge_x = 0, nudge_y = 0)
+
+kanye2+ theme(axis.text.x = element_text(angle = 90))
+
+kanye3 <- p1 %>%  ggplot(mapping = aes(x =track_album_release_date , y = speechiness , color = Type_of_Kanye, label = track_popularity))+
+  geom_jitter()+
+  labs(x = "Release Date", y = "speechiness", title = "Kanye West vs Time VS speechiness", subtitle = "Albums after MBDF are new Kanye")+
+  theme_classic()
+kanye3+ theme(axis.text.x = element_text(angle = 90))+ geom_text(check_overlap = TRUE, nudge_x = 0, nudge_y = 0)
+
+```
+By adding '+ theme(axis.text.x = element_text(angle = 90))' My date labels are vertical and thus readable. 
+
